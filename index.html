@@ -266,51 +266,68 @@
   }
 
   // Hiển thị người chơi và bài
-  function renderPlayers() {
-    const gameDiv = document.getElementById('game');
-    gameDiv.innerHTML = '';
-    players.forEach((p, i) => {
-      const playerDiv = document.createElement('div');
-      playerDiv.className = 'player';
+function renderPlayers() {
+  const gameDiv = document.getElementById('game');
+  gameDiv.innerHTML = '';
+  players.forEach((p, i) => {
+    const playerDiv = document.createElement('div');
+    playerDiv.className = 'player';
 
-      const nameDiv = document.createElement('div');
-      nameDiv.className = 'name';
-      nameDiv.textContent = p.name;
-      playerDiv.appendChild(nameDiv);
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'name';
+    nameDiv.textContent = p.name;
+    playerDiv.appendChild(nameDiv);
 
-      const cardsDiv = document.createElement('div');
-      cardsDiv.className = 'cards';
-      p.cards.forEach((card, idx) => {
-        const cardSpan = document.createElement('span');
-        cardSpan.textContent = card;
-        cardSpan.title = 'Nhấn để bỏ bài';
-        cardSpan.onclick = () => {
+    const cardsDiv = document.createElement('div');
+    cardsDiv.className = 'cards';
+    p.cards.forEach((card, idx) => {
+      const cardSpan = document.createElement('span');
+      cardSpan.textContent = card;
+      cardSpan.title = 'Nhấn để bỏ bài hoặc dùng 💉 để hồi HP';
+      cardSpan.onclick = () => {
+        if (card === '💉') {
+          p.hp += 2;
+          alert(`+2hp cho ${p.name}`);
           p.cards.splice(idx, 1);
           renderPlayers();
-        };
-        cardsDiv.appendChild(cardSpan);
-      });
-      playerDiv.appendChild(cardsDiv);
-
-      const hpDiv = document.createElement('div');
-      hpDiv.className = 'hp-bar';
-      hpDiv.textContent = `HP: ${p.hp}`;
-      const dmgBtn = document.createElement('button');
-      dmgBtn.className = 'damage-btn';
-      dmgBtn.textContent = '-1 HP';
-      dmgBtn.onclick = () => {
-        if (p.hp > 0) {
-          p.hp--;
-          if (p.hp <= 0) alert(`${p.name} đã thua!`);
+        } else {
+          p.cards.splice(idx, 1);
           renderPlayers();
         }
+        if (card == '🕵️') {
+          alert(`${p.name} đã dùng thẻ 🕵️ để xem đạn!`);
+        }
+        if (card == '🚫') {
+          alert(`${p.name} đã dùng thẻ 🚫 để còng tay 1 người bất kì`);
+        }
+        if (card == '🪚') {
+          alert(`${p.name} đã dùng thẻ 🪚 để x2 sát thương đạn`);
+        }
       };
-      hpDiv.appendChild(dmgBtn);
-      playerDiv.appendChild(hpDiv);
-
-      gameDiv.appendChild(playerDiv);
+      cardsDiv.appendChild(cardSpan);
     });
-  }
+    playerDiv.appendChild(cardsDiv);
+
+    const hpDiv = document.createElement('div');
+    hpDiv.className = 'hp-bar';
+    hpDiv.textContent = `HP: ${p.hp}`;
+    const dmgBtn = document.createElement('button');
+    dmgBtn.className = 'damage-btn';
+    dmgBtn.textContent = '-1 HP';
+    dmgBtn.onclick = () => {
+      if (p.hp > 0) {
+        p.hp--;
+        if (p.hp <= 0) alert(`${p.name} đã thua!`);
+        renderPlayers();
+      }
+    };
+    hpDiv.appendChild(dmgBtn);
+    playerDiv.appendChild(hpDiv);
+
+    gameDiv.appendChild(playerDiv);
+  });
+}
+
 
   // Xóa kết quả roll
   function clearResults() {
@@ -352,6 +369,7 @@
     });
     renderPlayers();
   }
+
 </script>
 
 </body>
