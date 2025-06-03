@@ -1,28 +1,358 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dự án Thời Tiết</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* CSS đã được bạn cung cấp */
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HP Game Mobile</title>
+<style>
+  /* Mobile-first, nền tối dịu nhẹ */
+  body {
+    margin: 0; padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0f13, #1a1a24);
+    color: #e0e7ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    user-select: none;
+    padding: 16px 12px;
+    box-sizing: border-box;
+  }
+
+  /* Overlay nhập liệu */
+  #overlay {
+    width: 100%;
+    max-width: 360px;
+    background: rgba(20,20,35,0.95);
+    border: 2px solid #39ff14;
+    border-radius: 12px;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #overlay label {
+    font-size: 1.25rem;
+  }
+  #overlay input[type="radio"] {
+    transform: scale(1.4);
+    margin-right: 6px;
+  }
+  #nameInputs input {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 2px solid #39ff14;
+    background: #111;
+    color: #aaffcc;
+    outline: none;
+    box-sizing: border-box;
+  }
+  #nameInputs input:focus {
+    border-color: #0ff;
+    background: #001a1a;
+    color: #ccffee;
+  }
+  #overlay button {
+    background: linear-gradient(45deg, #0ff, #008080);
+    border: none;
+    border-radius: 14px;
+    padding: 14px 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #001a1a;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0ff7;
+    user-select: none;
+    transition: background 0.3s ease;
+  }
+  #overlay button:hover {
+    background: linear-gradient(45deg, #0cc, #005050);
+    color: #c0fff0;
+  }
+
+  /* Controls */
+  #controls {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 20px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  #controls button {
+    flex: 1;
+    font-size: 1.7rem;
+    padding: 14px 0;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(45deg, #0ff, #008080);
+    color: #001a1a;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 12px #0ff7;
+    user-select: none;
+    transition: background 0.3s ease;
+  }
+  #controls button:active {
+    background: linear-gradient(45deg, #0cc, #005050);
+  }
+
+  /* Khu vực kết quả Roll 💣 */
+  #results {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 360px;
+    font-size: 3.2rem;
+    color: #39ff14;
+    letter-spacing: 6px;
+    user-select: none;
+    min-height: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  #results span {
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background: rgba(57,255,20,0.1);
+    user-select: none;
+    transition: transform 0.15s ease;
+  }
+
+  /* Player card */
+  #game {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .player {
+    background: rgba(20, 20, 35, 0.95);
+    border: 2px solid #39ff14;
+    border-radius: 16px;
+    padding: 16px 12px;
+    font-size: 1.3rem;
+    box-shadow: 0 0 12px #39ff14aa;
+    user-select: none;
+  }
+  .player div.name {
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-align: center;
+    font-size: 1.5rem;
+    color: #39ff14;
+  }
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .cards span {
+    font-size: 2.2rem;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: rgba(57,255,20,0.15);
+    transition: transform 0.15s ease;
+  }
+  .cards span:active {
+    transform: scale(0.9);
+  }
+  .hp-bar {
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #ff5555;
+  }
+  button.damage-btn {
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 6px 14px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    user-select: none;
+  }
+  button.damage-btn:active {
+    background-color: #cc2222;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="title">Dự báo Thời Tiết</h1>
-    <!-- Thêm dropdown ngôn ngữ -->
-    <select id="languageSwitcher" onchange="changeLanguage()">
-      <option value="vi">Tiếng Việt</option>
-      <option value="en">English</option>
-    </select>
 
-    <button onclick="getWeatherData()"><span id="weatherBtn">Xem Thời Tiết</span></button>
-    
-    <div id="weatherOutput" class="output"></div>
+  <div id="overlay">
+    <label>Chọn số người chơi:</label>
+    <div>
+      <label><input type="radio" name="numPlayers" value="2" onchange="confirmNumPlayers()"> 2</label>
+      <label><input type="radio" name="numPlayers" value="3" onchange="confirmNumPlayers()"> 3</label>
+      <label><input type="radio" name="numPlayers" value="4" onchange="confirmNumPlayers()"> 4</label>
+    </div>
+    <div id="nameInputs"></div>
+    <button onclick="startGame()" style="display:none;">Bắt đầu trò chơi</button>
   </div>
 
-  <script src="script.js"></script>
+  <div id="controls" style="display:none;">
+    <button onclick="rollBullet()">Roll 💣</button>
+    <button onclick="drawCards()">Card 🎴</button>
+  </div>
+
+  <div id="results" aria-live="polite" aria-atomic="true"></div>
+
+  <div id="game"></div>
+
+<script>
+  const cardIcons = ['🪚','💉','🚫','🕵️'];
+  let players = [];
+
+  function confirmNumPlayers() {
+    const radios = document.getElementsByName('numPlayers');
+    let num = 0;
+    for (const r of radios) {
+      if (r.checked) {
+        num = parseInt(r.value);
+        break;
+      }
+    }
+    if (num < 2 || num > 4) return;
+
+    const nameInputs = document.getElementById('nameInputs');
+    nameInputs.innerHTML = '';
+    for (let i = 0; i < num; i++) {
+      const input = document.createElement('input');
+      input.placeholder = `Tên người chơi ${i + 1}`;
+      input.id = `name${i}`;
+      input.autocomplete = "off";
+      nameInputs.appendChild(input);
+    }
+    document.querySelector('#overlay button').style.display = 'block';
+  }
+
+  function startGame() {
+    document.getElementById('game').innerHTML = '';
+    players = [];
+    const radios = document.getElementsByName('numPlayers');
+    let num = 0;
+    for (const r of radios) {
+      if (r.checked) {
+        num = parseInt(r.value);
+        break;
+      }
+    }
+    if (num < 2 || num > 4) return;
+
+    for (let i = 0; i < num; i++) {
+      const name = document.getElementById(`name${i}`).value.trim() || `Người chơi ${i+1}`;
+      players.push({ name, hp: 3, cards: [] });
+    }
+
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('controls').style.display = 'flex';
+
+    renderPlayers();
+    clearResults();
+  }
+
+  // Hiển thị người chơi và bài
+  function renderPlayers() {
+    const gameDiv = document.getElementById('game');
+    gameDiv.innerHTML = '';
+    players.forEach((p, i) => {
+      const playerDiv = document.createElement('div');
+      playerDiv.className = 'player';
+
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'name';
+      nameDiv.textContent = p.name;
+      playerDiv.appendChild(nameDiv);
+
+      const cardsDiv = document.createElement('div');
+      cardsDiv.className = 'cards';
+      p.cards.forEach((card, idx) => {
+        const cardSpan = document.createElement('span');
+        cardSpan.textContent = card;
+        cardSpan.title = 'Nhấn để bỏ bài';
+        cardSpan.onclick = () => {
+          p.cards.splice(idx, 1);
+          renderPlayers();
+        };
+        cardsDiv.appendChild(cardSpan);
+      });
+      playerDiv.appendChild(cardsDiv);
+
+      const hpDiv = document.createElement('div');
+      hpDiv.className = 'hp-bar';
+      hpDiv.textContent = `HP: ${p.hp}`;
+      const dmgBtn = document.createElement('button');
+      dmgBtn.className = 'damage-btn';
+      dmgBtn.textContent = '-1 HP';
+      dmgBtn.onclick = () => {
+        if (p.hp > 0) {
+          p.hp--;
+          if (p.hp <= 0) alert(`${p.name} đã thua!`);
+          renderPlayers();
+        }
+      };
+      hpDiv.appendChild(dmgBtn);
+      playerDiv.appendChild(hpDiv);
+
+      gameDiv.appendChild(playerDiv);
+    });
+  }
+
+  // Xóa kết quả roll
+  function clearResults() {
+    const results = document.getElementById('results');
+    results.innerHTML = '';
+  }
+
+  // Roll Bomb 💣: tạo mảng bomb (1..7), và 1 dấu ❌ là 8 - bomb, trộn rồi hiển thị
+  function rollBullet() {
+    clearResults();
+    let bombs = Math.floor(Math.random() * 7) + 1; // 1..7
+    const arr = [];
+    for (let i = 0; i < bombs; i++) arr.push('💣');
+    for (let i = bombs; i < 8; i++) arr.push('❌');
+
+    // Trộn mảng
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+
+    const results = document.getElementById('results');
+    arr.forEach(icon => {
+      const span = document.createElement('span');
+      span.textContent = icon;
+      span.title = "Nhấn để ẩn";
+      span.onclick = () => { span.style.display = 'none'; };
+      results.appendChild(span);
+    });
+  }
+
+  // Thêm 1 card cho mỗi người chơi, tối đa 8 card
+  function drawCards() {
+    players.forEach((p) => {
+      if (p.cards.length < 8) {
+        const newCard = cardIcons[Math.floor(Math.random() * cardIcons.length)];
+        p.cards.push(newCard);
+      }
+    });
+    renderPlayers();
+  }
+</script>
+
 </body>
 </html>
